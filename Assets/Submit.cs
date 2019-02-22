@@ -37,9 +37,9 @@ public class Submit : MonoBehaviour {
     {
         if(newPassword1.text != "" && newPassword2.text != "" && newUsername.text != "" && email.text != "")
         {
-            if(!email.text.Contains("@") || !email.text.Contains(".com") || !email.text.Length > 7)
+            if(!email.text.Contains("@") || !email.text.Contains(".com") || email.text.Length < 7)
             {
-                newAccountFeedback.text = "The Passwords Entered Do not Match";
+                newAccountFeedback.text = "Enter Valid Email Address";
                 return false;
             }
             if(newPassword1.text == newPassword2.text)
