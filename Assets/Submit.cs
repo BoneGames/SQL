@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using UnityEngine.SceneManagement;
 
 public class Submit : MonoBehaviour {
 
@@ -90,6 +91,18 @@ public class Submit : MonoBehaviour {
         
         yield return www;
         toolTip = www.text;
+        if(toolTip == "Success! You're the first user account to have been created!")
+        {
+            DataToPass.extraInfo = ", you're our first Logger";
+            DataToPass.username = _username;
+            SceneManager.LoadScene(2);
+        }
+        if (toolTip == "Success! Your user account has been created.")
+        {
+            DataToPass.extraInfo = ", new to loggin?";
+            DataToPass.username = _username;
+            SceneManager.LoadScene(2);
+        }
         newAccountFeedback.text = toolTip;
     }
 
@@ -109,11 +122,17 @@ public class Submit : MonoBehaviour {
         yield return www;
         toolTip = www.text;
         loginFeedback.text = toolTip;
+        if(toolTip == "Login Successful")
+        {
+            DataToPass.username = _username;
+            SceneManager.LoadScene(1);
+        }
         Debug.Log(toolTip);
     }
 
     IEnumerator RetrievePassword(string _email)
     {
+        Debug.Log(_email);
         toolTip = "";
 
         string retrievePasswordURL = "http://localhost/squealsystem/passwordRecovery.php";
@@ -121,14 +140,16 @@ public class Submit : MonoBehaviour {
         emailForm.AddField("emailPost", _email);
         WWW www = new WWW(retrievePasswordURL, emailForm);
         yield return www;
+        Debug.Log(_email);
 
-        
-        if(www.text == "email")
+
+        if (www.text == "email")
         {
             SendEmail(_email);
             toolTip = "An email with password reset instructions has been sent to " + _email;
         } else {
-            toolTip = "There is no account associated with that email.";
+            toolTip = www.text;
+            Debug.Log(toolTip);
         }
         recoverPasswordFeedback.text = toolTip;
     }
@@ -158,6 +179,7 @@ public class Submit : MonoBehaviour {
             { return true; };
 
         smtpServer.Send(mail);
+        SceneManager.LoadScene(3);
         Debug.Log("Success");
     }
     string RandomString()
@@ -165,6 +187,7 @@ public class Submit : MonoBehaviour {
         int seed = Random.Range(0,System.DateTime.Now.Millisecond);
         int number = seed * System.DateTime.Now.Second;
         string randomCode = number.ToString();
+        DataToPass.randomCode = randomCode;
         return randomCode;
     }
 }
