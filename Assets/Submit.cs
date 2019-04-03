@@ -15,6 +15,11 @@ public class Submit : MonoBehaviour {
     public Text newAccountFeedback, loginFeedback, recoverPasswordFeedback;
     public string toolTip;
 
+    public void LogOut()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     public void SubmitLoginButton()
     {
         if (LoginInputCheck())
@@ -93,12 +98,14 @@ public class Submit : MonoBehaviour {
         toolTip = www.text;
         if(toolTip == "Success! You're the first user account to have been created!")
         {
+            Debug.Log("hello");
             DataToPass.extraInfo = ", you're our first Logger";
             DataToPass.username = _username;
             SceneManager.LoadScene(2);
         }
         if (toolTip == "Success! Your user account has been created.")
         {
+            Debug.Log("hello");
             DataToPass.extraInfo = ", new to loggin?";
             DataToPass.username = _username;
             SceneManager.LoadScene(2);
@@ -157,6 +164,7 @@ public class Submit : MonoBehaviour {
     public void SendEmail(string email)
     {
         string code = RandomString();
+        DataToPass.randomCode = code;
 
         MailMessage mail = new MailMessage();
         mail.To.Add(email);

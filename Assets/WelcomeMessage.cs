@@ -10,11 +10,11 @@ public class WelcomeMessage : MonoBehaviour {
         Debug.Log(SceneManager.GetActiveScene().name);
         if (SceneManager.GetActiveScene().name == "LoggedIn")
         {
-            welcomeMessage.text = "Well Done " + DataToPass.username + " You Have Successfully Logged In";
+            welcomeMessage.text = "Well Done, " + DataToPass.username + ", You Have Successfully Logged In";
         }
         if (SceneManager.GetActiveScene().name == "AccountCreated")
         {
-            welcomeMessage.text = "Welcome " + DataToPass.username + DataToPass.extraInfo;
+            welcomeMessage.text = "Welcome, " + DataToPass.username + DataToPass.extraInfo;
         }
     }
 }
