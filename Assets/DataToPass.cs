@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DataToPass : MonoBehaviour {
 
-    public static string username, extraInfo, randomCode;
+    public static string username, extraInfo, randomCode, resetPasswordEmail;
 
     private void Start()
     {

@@ -11,10 +11,22 @@ using UnityEngine.SceneManagement;
 
 public class Submit : MonoBehaviour {
 
-    public InputField password, username, newPassword1, newPassword2, newUsername, email, forgotPasswordEmail;
-    public Text newAccountFeedback, loginFeedback, recoverPasswordFeedback;
+    public InputField password, username, newPassword1, newPassword2, newUsername, email, forgotPasswordEmail, randomCode, resetPassword1, resetPassword2;
+    public Text newAccountFeedback, loginFeedback, recoverPasswordFeedback, resetPasswordFeedback;
+    public GameObject randomCodeObj, resetPasswordsObj;
+    public InputField[] passwords = new InputField[5];
     public string toolTip;
 
+    void Start()
+    {
+        foreach(InputField password in passwords)
+        {
+            if(password)
+            {
+                password.inputType = InputField.InputType.Password;
+            }
+        }
+    }
     public void LogOut()
     {
         SceneManager.LoadScene(0);
@@ -45,11 +57,11 @@ public class Submit : MonoBehaviour {
     {
         if(newPassword1.text != "" && newPassword2.text != "" && newUsername.text != "" && email.text != "")
         {
-            // if(!email.text.Contains("@") || !email.text.Contains(".com") || email.text.Length < 7)
-            // {
-            //     newAccountFeedback.text = "Enter Valid Email Address";
-            //     return false;
-            // }
+            if(!email.text.Contains("@") || !email.text.Contains(".com") || email.text.Length < 7)
+            {
+                newAccountFeedback.text = "Enter Valid Email Address";
+                return false;
+            }
             if(newPassword1.text != newPassword2.text)
             {
                 newAccountFeedback.text = "Your Passwords Do not Match";
@@ -101,14 +113,14 @@ public class Submit : MonoBehaviour {
             Debug.Log("hello");
             DataToPass.extraInfo = ", you're our first Logger";
             DataToPass.username = _username;
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(1);
         }
         if (toolTip == "Success! Your user account has been created.")
         {
             Debug.Log("hello");
-            DataToPass.extraInfo = ", new to loggin?";
+            DataToPass.extraInfo = ", login' account created!";
             DataToPass.username = _username;
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(1);
         }
         newAccountFeedback.text = toolTip;
     }
@@ -154,6 +166,7 @@ public class Submit : MonoBehaviour {
         {
             SendEmail(_email);
             toolTip = "An email with password reset instructions has been sent to " + _email;
+            DataToPass.resetPasswordEmail = _email;
         } else {
             toolTip = www.text;
             Debug.Log(toolTip);
@@ -164,7 +177,6 @@ public class Submit : MonoBehaviour {
     public void SendEmail(string email)
     {
         string code = RandomString();
-        DataToPass.randomCode = code;
 
         MailMessage mail = new MailMessage();
         mail.To.Add(email);
@@ -197,5 +209,60 @@ public class Submit : MonoBehaviour {
         string randomCode = number.ToString();
         DataToPass.randomCode = randomCode;
         return randomCode;
+    }
+
+    public void CheckCode()
+    {
+        if(randomCode.text == DataToPass.randomCode)
+        {
+            randomCodeObj.SetActive(false);
+            resetPasswordsObj.SetActive(true);
+        }
+    }
+
+    public void CheckResetPasswords()
+    {
+        resetPasswordFeedback.text = "";
+        if(resetPassword1.text == resetPassword2.text)
+        {
+            StartCoroutine(ChangePassword(resetPassword1.text));
+        } 
+        else
+        {
+            resetPasswordFeedback.text = "Your passwords don't match.";
+        }
+    }
+
+    IEnumerator ChangePassword(string _password)
+    {
+        toolTip = "";
+        // Link to PHP
+        string changePasswordURL = "http://localhost/squealsystem/ResetPassword.php";
+
+        // Info to send to the POST variables (empty) in PHP InsertUser script
+        WWWForm changePasswordForm = new WWWForm();
+        
+        changePasswordForm.AddField("passwordPost", _password);
+        changePasswordForm.AddField("emailPost", DataToPass.resetPasswordEmail);
+        
+        WWW www = new WWW(changePasswordURL, changePasswordForm);
+        
+        yield return www;
+        toolTip = www.text;
+        if(toolTip == "Success")
+        {
+            resetPasswordFeedback.text = "Well Done, you have reset your password. You can now Login";
+            resetPasswordsObj.SetActive(false);
+        } else {
+            resetPasswordFeedback.text = "There was a problem resetting your password. The internet must be broken...";
+        }
+        // if (toolTip == "Success! Your user account has been created.")
+        // {
+        //     Debug.Log("hello");
+        //     DataToPass.extraInfo = ", login' account created!";
+        //     DataToPass.username = _username;
+        //     SceneManager.LoadScene(1);
+        // }
+        // newAccountFeedback.text = toolTip;
     }
 }
