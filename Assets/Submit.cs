@@ -17,16 +17,6 @@ public class Submit : MonoBehaviour {
     public InputField[] passwords = new InputField[5];
     public string toolTip;
 
-    void Start()
-    {
-        foreach(InputField password in passwords)
-        {
-            if(password)
-            {
-                password.inputType = InputField.InputType.Password;
-            }
-        }
-    }
     public void LogOut()
     {
         SceneManager.LoadScene(0);
@@ -199,9 +189,16 @@ public class Submit : MonoBehaviour {
             { return true; };
 
         smtpServer.Send(mail);
-        SceneManager.LoadScene(3);
-        Debug.Log("Success");
+        StartCoroutine("DelayLoadScene");
+        
     }
+
+    IEnumerator DelayLoadScene()
+    {
+        yield return new WaitForSeconds(5);
+        SceneManager.LoadScene(3);
+    }
+
     string RandomString()
     {
         int seed = Random.Range(0,System.DateTime.Now.Millisecond);
@@ -249,6 +246,7 @@ public class Submit : MonoBehaviour {
         
         yield return www;
         toolTip = www.text;
+        Debug.Log(toolTip);
         if(toolTip == "Success")
         {
             resetPasswordFeedback.text = "Well Done, you have reset your password. You can now Login";
